@@ -80,24 +80,77 @@ public class Ejercicio8 {
         int i;
         for (i = 0; i < vProductos.length; i++) {
             System.out.println("PRODUCTO" + (i + 1));
-            vProductos[i].datosProducto();
+            vProductos[i] = datosProducto();
         }
     }
 
-    public static void menuAdministradcion() {
-        int num, i = 1;
-        do {
-            System.out.println();
-            num = ENTRADA.nextInt();
+    public static Producto[] menuAdministradcion() {
+        Producto[] vProductos;
+        int longitud;
 
-            i++;
-        } while (i <= num);
+        System.out.println("Acseso al menú de Administracion");
+
+        longitud = pedirNum("Cuantos productos deseas dar de alta?");
+
+        vProductos = new Producto[longitud];
+
+        rellenarVector(vProductos);
+
+        return vProductos;
+    }
+
+    public static void mostrarProductos(Producto[] vProductos) {
+        int i;
+
+        for (i = 0; i < vProductos.length; i++) {
+            System.out.println("Pulse " + (i + 1) + "para comprar " + vProductos[i].getNombreProducto()
+                    + " cuyo precio es de " + vProductos[i].getPrecio() + "€ y el stock es de "
+                    + vProductos[i].getStock() + " unidades.");
+        }
+    }
+
+    public static boolean actualizarStock(Producto productoActualizar, int unidades) {
+        if (productoActualizar.getStock() < unidades) {
+
+            System.out.println("Error quedan menos unidades que las selecionadas");
+            return false;
+        } else {
+            productoActualizar.setStock(productoActualizar.getStock() - unidades);
+            return true;
+        }
+    }
+
+    public static void menuCompras(Producto[] vProductos) {
+        int num, opcion;
+        float subTotal = 0;
+        String respuesta;
+
+        System.out.println("Aceso al menu de compras");
+
+        do {
+            mostrarProductos(vProductos);
+            opcion = pedirNum("Elija producto: ");
+            System.out.println("Has elegido el producto: " + vProductos[opcion - 1].getNombreProducto());
+            do {
+                num = pedirNum("¿Cuantas unidades quieres?");
+                if (actualizarStock(vProductos[opcion - 1], num)) {
+                    subTotal += (num * vProductos[opcion - 1].getPrecio());
+                    break;
+                }
+
+            } while (true);
+            System.out.println("Subtotal de la cuenta: " + subTotal);
+            respuesta = pedirString("¿Quieres comprar otro producto?");
+        } while (respuesta.equalsIgnoreCase("si"));
+
+        System.out.print("La cuenta final es de: " + subTotal + "€");
+
     }
 
     public static void main(String[] args) throws Exception {
         System.out.println("--BIENVENIDO A MI TIENDA DE DEPORTES--");
-        int num = pedirNum("¿Cuantos productos deseas dar de alta?");
-        Producto[] vProductos = new Producto[num];
+        Producto[] vProductos = menuAdministradcion();
+        menuCompras(vProductos);
 
     }
 }
